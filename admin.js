@@ -63,7 +63,7 @@ document.querySelectorAll(".side-btn[data-tab]").forEach(function (btn) {
     btn.addEventListener("click", function () {
         document.querySelectorAll(".side-btn").forEach(function (t) { t.classList.remove("active"); });
         btn.classList.add("active");
-        ["dashboard", "cars", "reservations", "maintenance", "reports", "dsa", "settings"].forEach(function (n) {
+        ["dashboard", "cars", "reservations", "maintenance", "reports", "settings"].forEach(function (n) {
             $("tab-" + n).classList.toggle("hidden", n !== btn.dataset.tab);
         });
     });
