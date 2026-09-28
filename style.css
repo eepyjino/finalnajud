@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600&display=swap");
 
 :root {
     --bg-top: #1b1c20;
@@ -26,7 +26,7 @@ body {
 }
 body.modal-open { overflow: hidden; }
 
-h1, h2, h3, .logo, .footer-logo { font-family: "Josefin Sans", "Poppins", sans-serif; }
+h1, h2, h3 { font-family: "Josefin Sans", "Poppins", sans-serif; }
 
 /* ================= NAVBAR ================= */
 .navbar {
@@ -37,7 +37,7 @@ h1, h2, h3, .logo, .footer-logo { font-family: "Josefin Sans", "Poppins", sans-s
     color: #fff; position: sticky; top: 0; z-index: 1000;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-.logo, .footer-logo { font-size: 26px; font-weight: 700; font-style: italic; letter-spacing: 1px; text-transform: uppercase; }
+.logo, .footer-logo { font-family: "Montserrat", "Poppins", sans-serif; font-size: 26px; font-weight: 800; font-style: normal; letter-spacing: 0.5px; text-transform: uppercase; }
 .logo span, .footer-logo span { color: var(--blue); }
 .navbar nav { display: flex; gap: 34px; }
 .navbar nav a { color: #fff; text-decoration: none; font-size: 15px; transition: 0.3s; }
@@ -74,7 +74,7 @@ h1, h2, h3, .logo, .footer-logo { font-family: "Josefin Sans", "Poppins", sans-s
 .section-heading { text-align: center; margin-bottom: 45px; }
 .section-heading p, .section-label, .modal-label { color: var(--blue); font-size: 13px; font-weight: 600; letter-spacing: 3px; }
 .section-heading h2, .about-content h2 { font-size: 42px; margin: 8px 0; color: #fff; text-transform: uppercase; }
-.section-heading span { color: var(--muted); }
+.section-heading span { color: var(--muted); display: inline-block; max-width: 560px; }
 
 /* ================= PRICE FILTER ================= */
 .fleet-filter {
@@ -144,10 +144,35 @@ h1, h2, h3, .logo, .footer-logo { font-family: "Josefin Sans", "Poppins", sans-s
 
 /* ================= CONTACT ================= */
 .contact-section { background: transparent; }
-.contact-container { max-width: 1000px; margin: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.contact-box { background: var(--card); padding: 30px; text-align: center; border-radius: 10px; border: 1px solid var(--card-border); }
-.contact-box h3 { margin-bottom: 8px; color: var(--blue); }
-.contact-box p { color: var(--muted); }
+
+.contact-grid { max-width: 1000px; margin: 0 auto 25px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+.contact-card {
+    background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.contact-card h3 {
+    display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600;
+    margin-bottom: 22px; color: #fff; text-transform: none;
+}
+.contact-card h3 i { font-size: 20px; color: var(--blue); }
+.contact-field { margin-bottom: 20px; }
+.contact-field:last-child { margin-bottom: 0; }
+.contact-field > p { font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+.contact-field a { font-size: 16px; font-weight: 600; color: var(--blue); text-decoration: none; }
+.contact-field a:hover { text-decoration: underline; }
+.contact-hours { display: block; font-size: 14px; color: #cfd6e6; }
+
+.map-box {
+    margin-top: 6px; border-radius: 8px; overflow: hidden;
+    height: 180px; border: 1px solid var(--card-border);
+}
+.map-box iframe { display: block; }
+
+.response-banner {
+    max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
+    background: rgba(46, 160, 90, 0.15); color: #5fd38a; padding: 16px 20px; border-radius: 12px; font-size: 14px;
+}
+.response-banner i { font-size: 20px; flex-shrink: 0; }
 
 /* ================= MODAL ================= */
 .modal {
@@ -200,7 +225,7 @@ footer small { color: #5b6378; }
 @media (max-width: 850px) {
     .navbar { padding: 15px 5%; flex-wrap: wrap; gap: 15px; }
     .navbar nav { order: 3; width: 100%; justify-content: center; gap: 20px; }
-    .car-grid, .contact-container { grid-template-columns: 1fr; }
+    .car-grid, .contact-grid { grid-template-columns: 1fr; }
     .filter-fields { flex-direction: column; align-items: stretch; }
     .filter-btn, .clear-filter-btn { width: 100%; }
 }
