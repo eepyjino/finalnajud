@@ -1,5 +1,5 @@
 /* ============================================================
-   DriveEase Admin. Security: every write is checked by Supabase
+   Abante Rentals Admin. Security: every write is checked by Supabase
    Row Level Security (role = 'admin'); hiding buttons is NOT security.
    ============================================================ */
 
@@ -130,7 +130,7 @@ function renderCars() {
     list = bubbleSort(list, carComparator($("carSort").value));   // ALGORITHM: BUBBLE SORT
 
     $("carRows").innerHTML = list.length ? list.map(function (c) {
-        const img = c.image_url ? '<img src="' + esc(c.image_url) + '" alt="">' : '<div class="noimg">🚗</div>';
+        const img = c.image_url ? '<img src="' + esc(c.image_url) + '" alt="">' : '<div class="noimg">No Image</div>';
         const opts = ["available", "reserved", "maintenance", "unavailable"].map(function (s) {
             return '<option ' + (s === c.status ? "selected" : "") + '>' + s + '</option>';
         }).join("");
@@ -418,12 +418,12 @@ function renderReports() {
     const util = cars.length ? Math.round(inUse / cars.length * 100) : 0;
 
     $("reportCards").innerHTML =
-        '<div class="panel"><h3>📈 Revenue Report</h3><ul class="list">' + (months.length ? months.map(function (m) {
+        '<div class="panel"><h3>Revenue Report</h3><ul class="list">' + (months.length ? months.map(function (m) {
             return "<li>" + m + "<small>" + peso(byMonth[m]) + "</small></li>";
         }).join("") : "<li>No revenue yet.</li>") + '</ul></div>' +
-        '<div class="panel"><h3>🚗 Fleet Utilization</h3><div class="stat" style="border:0;box-shadow:none;padding:0"><strong>' + util + '%</strong><span>' +
+        '<div class="panel"><h3>Fleet Utilization</h3><div class="stat" style="border:0;box-shadow:none;padding:0"><strong>' + util + '%</strong><span>' +
         inUse + " of " + cars.length + " cars rented today</span></div></div>" +
-        '<div class="panel"><h3>📊 Booking Analytics</h3><ul class="list">' + statuses.map(function (s) {
+        '<div class="panel"><h3>Booking Analytics</h3><ul class="list">' + statuses.map(function (s) {
             return "<li>" + badge(s) + "<small>" + linearSearch(reservations, function (r) { return r.status === s; }).length + " reservations</small></li>";
         }).join("") + "</ul></div>";
 }
