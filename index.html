@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Abante Rentals Car Rental</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+        <div class="logo">Abante<span>Rentals</span></div>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#fleet">Our Fleet</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        <a href="#fleet" class="nav-btn">Rent a Car</a>
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+    <section id="home" class="hero">
+
+        <div class="hero-content">
+            <p class="small-title">WELCOME TO ABANTE RENTALS</p>
+
+            <h1>
+                Your Journey,
+                <span>Our Cars.</span>
+            </h1>
+
+            <p class="hero-text">
+                Find the perfect car for your next trip.
+                Easy booking, comfortable rides, and affordable prices.
+            </p>
+
+            <a href="#fleet" class="hero-btn">Explore Cars</a>
+        </div>
+
+    </section>
+
+
+    <!-- ================= FLEET ================= -->
+    <section id="fleet" class="fleet-section">
+
+        <div class="section-heading">
+            <p>OUR FLEET</p>
+            <h2>Choose Your Ride</h2>
+            <span>Find a vehicle that fits your journey.</span>
+        </div>
+
+
+        <!-- PRICE FILTER -->
+        <div class="fleet-filter">
+
+            <div class="filter-title">
+                <h3>Filter by Price</h3>
+                <p>Choose your preferred price range.</p>
+            </div>
+
+            <div class="filter-fields">
+
+                <div class="filter-group">
+                    <label for="minPrice">Lowest Price</label>
+
+                    <input
+                        type="number"
+                        id="minPrice"
+                        placeholder="₱3,800"
+                        min="0"
+                    >
+                </div>
+
+
+                <div class="filter-group">
+                    <label for="maxPrice">Highest Price</label>
+
+                    <input
+                        type="number"
+                        id="maxPrice"
+                        placeholder="₱6,500"
+                        min="0"
+                    >
+                </div>
+
+
+                <div class="filter-group">
+                    <label for="carSearch">Search Car</label>
+
+                    <input
+                        type="text"
+                        id="carSearch"
+                        placeholder="Name, brand or model"
+                        maxlength="60"
+                    >
+                </div>
+
+
+                <button class="filter-btn" onclick="filterCars()">
+                    Apply Filter
+                </button>
+
+                <button class="clear-filter-btn" onclick="clearCarFilter()">
+                    Clear
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- CAR LIST (rendered from Supabase by script.js) -->
+        <div class="car-grid" id="carGrid">
+            <p class="loading-cars">Loading cars...</p>
+        </div>
+
+        <p id="noCars" class="no-cars">
+            No cars found matching your filter.
+        </p>
+
+    </section>
+
+
+    <!-- ================= ABOUT ================= -->
+    <section id="about" class="about-section">
+
+        <div class="about-content">
+
+            <p class="section-label">ABOUT ABANTE RENTALS</p>
+
+            <h2>Making Every Trip Easier</h2>
+
+            <p>
+                Abante Rentals provides convenient and affordable car rental
+                options for people who want a comfortable and stress-free
+                travel experience.
+            </p>
+
+            <p>
+                Whether you're traveling around the city, going on a
+                family trip, or planning a weekend adventure, we have
+                a vehicle ready for you.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= CONTACT ================= -->
+    <section id="contact" class="contact-section">
+
+        <div class="section-heading">
+            <p>GET IN TOUCH</p>
+            <h2>Contact Abante Rentals</h2>
+            <span>Have questions about our rentals? We're here to help. Reach out and we'll respond within 2 hours.</span>
+        </div>
+
+        <div class="contact-grid">
+
+            <div class="contact-card">
+
+                <h3><i class="ti ti-phone" aria-hidden="true"></i>Direct Contact</h3>
+
+                <div class="contact-field">
+                    <p>Phone</p>
+                    <a href="tel:+639123456789">0912 345 6789</a>
+                </div>
+
+                <div class="contact-field">
+                    <p>Email</p>
+                    <a href="mailto:abanterentals@email.com">abanterentals@email.com</a>
+                </div>
+
+                <div class="contact-field">
+                    <p>Business Hours</p>
+                    <span class="contact-hours">Mon–Fri: 8am–6pm</span>
+                    <span class="contact-hours">Sat: 9am–4pm</span>
+                    <span class="contact-hours">Sun: Closed</span>
+                </div>
+
+            </div>
+
+            <div class="contact-card">
+
+                <h3><i class="ti ti-map-pin" aria-hidden="true"></i>Location</h3>
+
+                <div class="contact-field">
+                    <p>Address</p>
+                    <span class="contact-hours">Central Philippines State University<br>Main Campus, San Carlos City<br>Negros Occidental, Philippines</span>
+                </div>
+
+                <div class="map-box">
+                    <iframe
+                        src="https://www.google.com/maps?q=Central+Philippines+State+University+Main+Campus,+San+Carlos+City,+Negros+Occidental,+Philippines&output=embed"
+                        width="100%"
+                        height="100%"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Abante Rentals location map">
+                    </iframe>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="response-banner">
+            <i class="ti ti-check" aria-hidden="true"></i>
+            <span>We typically respond within 2 hours during business hours.</span>
+        </div>
+
+    </section>
+
+
+    <!-- ================= RESERVATION MODAL ================= -->
+    <div id="reservationModal" class="modal">
+
+        <div class="modal-content">
+
+            <button
+                class="close-modal"
+                onclick="closeReservation()"
+            >
+                &times;
+            </button>
+
+            <p class="modal-label">ABANTE RENTALS RESERVATION</p>
+
+            <h2>Reserve Your Car</h2>
+
+            <div class="selected-car">
+
+                <p>Selected Vehicle</p>
+
+                <h3 id="selectedCar">
+                    Car
+                </h3>
+
+                <strong id="selectedPrice">
+                    ₱0 / day
+                </strong>
+
+            </div>
+
+
+            <form onsubmit="submitReservation(event)" novalidate>
+
+                <div id="formError" class="form-error"></div>
+
+                <div class="form-group">
+
+                    <label for="customerName">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        placeholder="Enter your name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customerEmail">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="customerEmail"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="pickupDate">
+                            Pickup Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="pickupDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="returnDate">
+                            Return Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="returnDate"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customerMessage">
+                        Additional Message
+                    </label>
+
+                    <textarea
+                        id="customerMessage"
+                        rows="4"
+                        placeholder="Any additional request?"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="reservation-range">
+
+                    <span>Rental Price</span>
+
+                    <strong id="reservationPrice">
+                        ₱0 / day
+                    </strong>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit-reservation"
+                >
+                    Confirm Reservation
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+
+        <div class="footer-logo">
+            Abante<span>Rentals</span>
+        </div>
+
+        <p>
+            Easy rides. Better journeys.
+        </p>
+
+        <small>
+            © 2026 Abante Rentals. All rights reserved.
+        </small>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="dsa.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
