@@ -72,7 +72,7 @@ td select { height: 32px; border: 1px solid var(--card-border); border-radius: 6
 /* ===== SIDEBAR LAYOUT ===== */
 .shell { display: flex; min-height: 100vh; }
 .sidebar { width: 230px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; padding: 24px 14px; display: flex; flex-direction: column; gap: 6px; background: rgba(20,21,25,.96); border-right: 1px solid var(--card-border); overflow-y: auto; }
-.sidebar .logo { padding: 0 10px 14px; }
+.sidebar .logo { padding: 0 10px 14px; font-size: 18px; letter-spacing: 0.3px; white-space: nowrap; }
 .side-label { font-size: 11px; letter-spacing: 2px; color: var(--muted); padding: 0 10px 6px; }
 .side-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .side-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: none; border-radius: 8px; background: transparent; color: #cfd6e6; font-family: inherit; font-size: 14px; cursor: pointer; text-align: left; width: 100%; }
