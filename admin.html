@@ -32,7 +32,6 @@
       <button class="side-btn" data-tab="reservations">Bookings</button>
       <button class="side-btn" data-tab="maintenance">Maintenance</button>
       <button class="side-btn" data-tab="reports">Reports</button>
-      <button class="side-btn" data-tab="dsa">DSA Guide</button>
       <button class="side-btn" data-tab="settings">Settings</button>
     </nav>
     <button class="side-btn logout" onclick="adminLogout()">Logout</button>
@@ -55,12 +54,12 @@
       </div>
       <div class="two">
         <div class="panel">
-          <h3>Pending Reservation Queue (FIFO)</h3>
+          <h3>Pending Reservation Queue</h3>
           <div class="toolbar"><button class="btn small" onclick="processNextReservation()">Confirm Next in Queue</button></div>
           <ul class="list" id="queueList"></ul>
         </div>
         <div class="panel">
-          <h3>Admin Action History (Stack, newest first)</h3>
+          <h3>Admin Action History</h3>
           <div class="toolbar"><button class="btn small light" onclick="undoLastStatusChange()">Undo Last Status Change</button></div>
           <ul class="list" id="actionList"></ul>
         </div>
@@ -113,30 +112,6 @@
       </table></div>
     </section>
 
-    <!-- DSA GUIDE -->
-    <section id="tab-dsa" class="hidden">
-      <h2>DSA Guide</h2>
-      <div class="panel" style="margin-bottom:20px"><h3>Data Structures</h3>
-      <div class="table-wrap dsa"><table>
-        <thead><tr><th>DATA STRUCTURE</th><th>PURPOSE</th><th>WHERE USED</th><th>WHY SELECTED</th></tr></thead>
-        <tbody>
-        <tr><td>Array</td><td>Holds car and reservation records from Supabase</td><td>script.js <code>cars</code>, admin.js <code>cars</code>, <code>reservations</code></td><td>Simple, fast indexing; results of every query are lists</td></tr>
-        <tr><td>Queue (FIFO)</td><td>Pending reservations served in order received</td><td>admin.js <code>reservationQueue</code>, "Confirm Next in Queue"</td><td>First customer to book is served first (fairness)</td></tr>
-        <tr><td>Stack (LIFO)</td><td>Admin action history and undo</td><td>admin.js <code>actionStack</code>, "Undo Last Status Change"</td><td>The most recent action is always the one to look at or undo</td></tr>
-        <tr><td>Binary Search Tree</td><td>Cars ordered by name for fast lookup</td><td>admin.js "Name prefix (BST)" search</td><td>Each step skips half the tree instead of checking every car</td></tr>
-        </tbody></table></div></div>
-      <div class="panel"><h3>Algorithms</h3>
-      <div class="table-wrap dsa"><table>
-        <thead><tr><th>ALGORITHM</th><th>PURPOSE</th><th>WHERE USED</th><th>HOW IT WORKS</th></tr></thead>
-        <tbody>
-        <tr><td>Linear Search</td><td>Keyword and status search</td><td>Customer search, admin car/reservation search, conflict check</td><td>Checks every item one by one</td></tr>
-        <tr><td>Binary Search</td><td>Price lookup and price range</td><td>Customer price filter, admin "Exact price"</td><td>On sorted data, compares to the middle and discards half each step</td></tr>
-        <tr><td>Bubble Sort</td><td>Sort cars and reservations</td><td>Admin sort dropdowns</td><td>Swaps neighbours that are out of order until nothing changes</td></tr>
-        <tr><td>Selection Sort</td><td>Sort cars by price before binary search</td><td>Customer price filter</td><td>Picks the smallest remaining item and places it next</td></tr>
-        <tr><td>FIFO Queue Processing</td><td>Schedule reservation confirmation</td><td>admin.js <code>processQueueFIFO()</code></td><td>Dequeues the oldest pending reservation and confirms it</td></tr>
-        </tbody></table></div></div>
-    </section>
-  
     <!-- MAINTENANCE -->
     <section id="tab-maintenance" class="hidden">
       <h2>Maintenance</h2>
