@@ -1,12 +1,12 @@
 # DriveEase Car Rental (Supabase + DSA)
 
-The original DriveEase design is unchanged. The fleet now loads from Supabase, reservations are saved to it, and a separate `admin.html` manages everything.
+The car rental site loads its fleet and reservations from Supabase. The customer front page is available at `/`, and the admin dashboard is available at `/admin/`.
 
 ## Files
 | File | Purpose |
 |---|---|
-| index.html, style.css, script.js | Customer website (your design; cards now rendered from the database) |
-| admin.html, admin.css, admin.js | Admin login, cars, reservations, queue, stack, DSA guide |
+| index.html, style.css, script.js | Customer landing page and fleet |
+| admin/index.html, admin.css, admin.js | Admin login, cars, reservations, queue, stack, DSA guide |
 | supabase.js | Configuration + Supabase client |
 | dsa.js | All data structures and algorithms |
 | supabase.sql | Tables, constraints, indexes, RLS, storage policies, seed cars |
@@ -27,7 +27,7 @@ The original DriveEase design is unchanged. The fleet now loads from Supabase, r
 4. **Project Settings > API**: copy *Project URL* and the *anon public* key into the top of `supabase.js`:
    `const SUPABASE_URL = "YOUR_SUPABASE_URL";` and `const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";`
    (Never use the service_role key.)
-5. Open `index.html` (customers) and `admin.html` (admin). Use VS Code Live Server or any static host.
+5. Open the site root `/` for customers and `/admin/` for the admin dashboard. Use Five Server, VS Code Live Server, or any static host that serves directory index files.
 
 Optional: Authentication > Providers > Email: disable public sign-ups so nobody else can register.
 
@@ -63,7 +63,7 @@ Optional: Authentication > Providers > Email: disable public sign-ups so nobody 
 5. Admin confirms the next in queue (or sets any status), and each change is pushed on the action stack (undoable).
 
 ## Test checklist
-1. Open index.html: same design. 2. Cars appear from Supabase. 3. Admin > Cars > Add Car with image. 4. Refresh customer site: new car shows. 5. Price filter. 6. Reserve a car. 7. Admin > Reservations shows it. 8. Edit a car: change appears on the site. 9. Delete a car: gone from fleet. 10. Not logged in, run `sb.from('cars').delete()` in the browser console: RLS deletes nothing. 11. Search. 12. Sort.
+1. Open `/`: the landing page loads. 2. Cars appear from Supabase. 3. Open `/admin/` and add a car. 4. Refresh the customer site: new car shows. 5. Search and filter dates. 6. Reserve a car. 7. Admin > Bookings shows it. 8. Edit a car: changes appear on the site. 9. Delete a car: it leaves the fleet. 10. Not logged in, run `sb.from('cars').delete()` in the browser console: RLS blocks the delete. 11. Search. 12. Sort.
 
 ## Presentation script (beginner-friendly)
 - **Purpose:** an online car rental where customers browse and reserve cars and an admin manages the fleet.

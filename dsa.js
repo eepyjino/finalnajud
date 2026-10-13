@@ -1,5 +1,5 @@
 /* ============================================================
-   DSA LAYER - shared by index.html (customer) and admin.html
+    DSA LAYER - shared by the customer page and /admin/ dashboard
    4 Data Structures : Array, Queue, Stack, Binary Search Tree
    4+ Algorithms     : Linear Search, Binary Search,
                        Bubble Sort, Selection Sort,
