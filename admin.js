@@ -6,6 +6,8 @@
 // DATA STRUCTURE: ARRAY - car and reservation records retrieved from Supabase
 let cars = [];
 let reservations = [];
+let users = [];
+let currentAdminId = "";
 
 // DATA STRUCTURE: QUEUE - pending reservations, oldest at the front (FIFO)
 let reservationQueue = new Queue();
@@ -45,6 +47,7 @@ async function enterApp() {
         await sb.auth.signOut();
         return showMsg("loginMsg", "This account is not an administrator.");
     }
+    currentAdminId = user.id;
     $("setEmail").value = user.email;
     $("loginView").classList.add("hidden");
     $("appView").classList.remove("hidden");
@@ -63,7 +66,7 @@ document.querySelectorAll(".side-btn[data-tab]").forEach(function (btn) {
     btn.addEventListener("click", function () {
         document.querySelectorAll(".side-btn").forEach(function (t) { t.classList.remove("active"); });
         btn.classList.add("active");
-        ["dashboard", "cars", "reservations", "maintenance", "reports", "settings"].forEach(function (n) {
+        ["dashboard", "cars", "reservations", "users", "maintenance", "reports", "settings"].forEach(function (n) {
             $("tab-" + n).classList.toggle("hidden", n !== btn.dataset.tab);
         });
     });
@@ -75,16 +78,66 @@ document.querySelectorAll(".side-btn[data-tab]").forEach(function (btn) {
 async function refreshAll() {
     const c = await sb.from("cars").select("*");
     const r = await sb.from("reservations").select("*, cars(name, price_per_day)");
-    if (c.error || r.error) return toast("Load error: " + (c.error || r.error).message);
+    const u = await sb.from("profiles").select("id, full_name, email, role, created_at");
+    if (c.error || r.error || u.error) return toast("Load error: " + (c.error || r.error || u.error).message);
     cars = c.data;
     reservations = r.data;
+    users = u.data;
     renderCars();
     renderReservations();
+    renderUsers();
     loadQueue();
     renderActions();
     renderDashboard();
     renderMaintenance();
     renderReports();
+}
+
+
+/* ================= USERS ================= */
+
+function renderUsers() {
+    const term = $("userSearch").value.trim().toLowerCase();
+    const matchingUsers = term ? users.filter(function (user) {
+        return [user.full_name, user.email, user.role].join(" ").toLowerCase().indexOf(term) !== -1;
+    }) : users;
+    const adminCount = users.filter(function (user) { return user.role === "admin"; }).length;
+
+    $("userTotal").textContent = users.length;
+    $("userCustomers").textContent = users.filter(function (user) { return user.role === "customer"; }).length;
+    $("userAdmins").textContent = adminCount;
+    $("userRows").innerHTML = matchingUsers.length ? matchingUsers.map(function (user) {
+        const joined = user.created_at ? new Date(user.created_at).toLocaleDateString() : "-";
+        const bookingCount = reservations.filter(function (reservation) { return reservation.customer_id === user.id; }).length;
+        const locked = user.id === currentAdminId || (user.role === "admin" && adminCount <= 1);
+        const roleOptions = ["customer", "admin"].map(function (role) {
+            return '<option value="' + role + '" ' + (user.role === role ? "selected" : "") + '>' + role + '</option>';
+        }).join("");
+        return "<tr><td><strong>" + esc(user.full_name || "Unnamed user") + "</strong>" +
+            (user.id === currentAdminId ? " <small>(you)</small>" : "") + "</td><td>" + esc(user.email) +
+            "</td><td>" + esc(joined) + "</td><td>" + bookingCount + "</td>" +
+            '<td><select aria-label="Role for ' + esc(user.email) + '" onchange="changeUserRole(\'' + esc(user.id) + '\', this.value)" ' +
+            (locked ? "disabled" : "") + ">" + roleOptions + "</select></td></tr>";
+    }).join("") : '<tr><td colspan="5">No users found.</td></tr>';
+}
+
+async function changeUserRole(id, role) {
+    const user = users.find(function (item) { return item.id === id; });
+    if (!user || !["customer", "admin"].includes(role) || user.role === role) return;
+    if (id === currentAdminId) return toast("You cannot change your own role.");
+    const adminCount = users.filter(function (item) { return item.role === "admin"; }).length;
+    if (user.role === "admin" && role !== "admin" && adminCount <= 1) {
+        return toast("At least one administrator must remain.");
+    }
+
+    const { error } = await sb.from("profiles").update({ role }).eq("id", id);
+    if (error) {
+        toast("Role update failed: " + error.message);
+        return refreshAll();
+    }
+    logAction("Changed user role", (user.full_name || user.email) + ": " + user.role + " -> " + role);
+    toast("User role updated");
+    await refreshAll();
 }
 
 
@@ -161,6 +214,7 @@ function openCarModal(id) {
     $("carModalTitle").textContent = car ? "Edit Car" : "Add Car";
     $("carId").value = car ? car.id : "";
     $("carImage").value = "";
+    $("interiorImage").value = "";
     $("carName").value = car ? car.name : "";
     $("carBrand").value = car ? car.brand : "";
     $("carModel").value = car ? car.model : "";
@@ -170,10 +224,16 @@ function openCarModal(id) {
     $("carStatus").value = car ? car.status : "available";
     $("carTrans").value = car ? car.transmission : "Automatic";
     $("carFuel").value = car ? car.fuel_type : "Gasoline";
+    $("carEngine").value = car ? (car.engine || "") : "";
+    $("carDrivetrain").value = car ? (car.drivetrain || "") : "";
+    $("carTireSize").value = car ? (car.tire_size || "") : "";
     $("carDesc").value = car ? (car.description || "") : "";
     const p = $("carPreview");
     p.classList.toggle("hidden", !(car && car.image_url));
     if (car && car.image_url) p.src = car.image_url;
+    const interiorPreview = $("interiorPreview");
+    interiorPreview.classList.toggle("hidden", !(car && car.interior_image_url));
+    if (car && car.interior_image_url) interiorPreview.src = car.interior_image_url;
     $("carModal").classList.add("show");
 }
 function closeCarModal() { $("carModal").classList.remove("show"); }
@@ -194,6 +254,16 @@ function previewImage() {
     $("carPreview").classList.remove("hidden");
 }
 
+function previewInteriorImage() {
+    const file = $("interiorImage").files[0];
+    if (!file) return;
+    const err = checkImage(file);
+    if (err) { $("interiorImage").value = ""; return showMsg("carMsg", err); }
+    showMsg("carMsg", "");
+    $("interiorPreview").src = URL.createObjectURL(file);
+    $("interiorPreview").classList.remove("hidden");
+}
+
 async function uploadImage(file) {
     const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
     const path = "cars/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + "." + ext;
@@ -207,6 +277,7 @@ async function saveCar(e) {
     const id = $("carId").value;
     const old = id ? cars.find(function (c) { return c.id === id; }) : null;
     const file = $("carImage").files[0];
+    const interiorFile = $("interiorImage").files[0];
     const year = Number($("carYear").value), price = Number($("carPrice").value), seats = Number($("carSeats").value);
 
     // ----- VALIDATION -----
@@ -216,31 +287,40 @@ async function saveCar(e) {
     if (!($("carPrice").value !== "" && price > 0 && price < 1000000)) return showMsg("carMsg", "Price must be a positive number.");
     if (!Number.isInteger(seats) || seats < 1 || seats > 20) return showMsg("carMsg", "Seats must be a whole number from 1 to 20.");
     if (file) { const err = checkImage(file); if (err) return showMsg("carMsg", err); }
+    if (interiorFile) { const err = checkImage(interiorFile); if (err) return showMsg("carMsg", err); }
 
     $("carSaveBtn").disabled = true;
+    const uploadedPaths = [];
     try {
         const row = Object.assign(f, {
             year, price_per_day: price, seats,
             transmission: $("carTrans").value, fuel_type: $("carFuel").value,
+            engine: $("carEngine").value.trim() || null,
+            drivetrain: $("carDrivetrain").value.trim() || null,
+            tire_size: $("carTireSize").value.trim() || null,
             status: $("carStatus").value, description: $("carDesc").value.trim() || null
         });
         if (file) {
             const up = await uploadImage(file);
+            uploadedPaths.push(up.path);
             row.image_url = up.url; row.image_path = up.path;
         }
-        const res = id ? await sb.from("cars").update(row).eq("id", id) : await sb.from("cars").insert(row);
-        if (res.error) {
-            if (row.image_path) await sb.storage.from(CAR_BUCKET).remove([row.image_path]);   // undo orphan upload
-            throw res.error;
+        if (interiorFile) {
+            const up = await uploadImage(interiorFile);
+            uploadedPaths.push(up.path);
+            row.interior_image_url = up.url; row.interior_image_path = up.path;
         }
-        // replaced image: delete the old file from Storage
+        const res = id ? await sb.from("cars").update(row).eq("id", id) : await sb.from("cars").insert(row);
+        if (res.error) throw res.error;
         if (file && old && old.image_path) await sb.storage.from(CAR_BUCKET).remove([old.image_path]);
+        if (interiorFile && old && old.interior_image_path) await sb.storage.from(CAR_BUCKET).remove([old.interior_image_path]);
 
         logAction(id ? "Edited car" : "Added car", f.name);
         closeCarModal();
         toast("Car saved");
         refreshAll();
     } catch (err) {
+        if (uploadedPaths.length) await sb.storage.from(CAR_BUCKET).remove(uploadedPaths);
         showMsg("carMsg", "Save failed: " + err.message);
     }
     $("carSaveBtn").disabled = false;
@@ -251,7 +331,8 @@ async function deleteCar(id) {
     if (!confirm('Delete "' + car.name + '"? Its reservations will also be deleted.')) return;
     const { error } = await sb.from("cars").delete().eq("id", id);
     if (error) return toast("Delete failed: " + error.message);
-    if (car.image_path) await sb.storage.from(CAR_BUCKET).remove([car.image_path]);
+    const imagePaths = [car.image_path, car.interior_image_path].filter(Boolean);
+    if (imagePaths.length) await sb.storage.from(CAR_BUCKET).remove(imagePaths);
     logAction("Deleted car", car.name);
     toast("Car deleted");
     refreshAll();

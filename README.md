@@ -14,6 +14,14 @@ The original DriveEase design is unchanged. The fleet now loads from Supabase, r
 ## Setup (5 steps)
 1. Create a project at https://supabase.com.
 2. **SQL Editor > New query**, paste all of `supabase.sql`, click **Run**. This also creates the `car-images` bucket (public, 2 MB, JPG/PNG/WEBP) and adds your 8 original cars. (Manual alternative: Storage > New bucket > name `car-images` > Public.)
+   For an existing project, run only this migration in the SQL Editor (do not rerun the full seed script):
+   ```sql
+   alter table public.cars add column if not exists interior_image_url text;
+   alter table public.cars add column if not exists interior_image_path text;
+   alter table public.cars add column if not exists engine text;
+   alter table public.cars add column if not exists drivetrain text;
+   alter table public.cars add column if not exists tire_size text;
+   ```
 3. **Authentication > Users > Add user**: enter your email and password, tick *Auto Confirm User*. Then in the SQL Editor run:
    `update public.profiles set role = 'admin' where email = 'YOUR_EMAIL';`
 4. **Project Settings > API**: copy *Project URL* and the *anon public* key into the top of `supabase.js`:

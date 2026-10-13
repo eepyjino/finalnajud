@@ -50,6 +50,12 @@ create table if not exists public.cars (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+-- Add the interior photo fields to existing projects without rebuilding the table.
+alter table public.cars add column if not exists interior_image_url text;
+alter table public.cars add column if not exists interior_image_path text;
+alter table public.cars add column if not exists engine text;
+alter table public.cars add column if not exists drivetrain text;
+alter table public.cars add column if not exists tire_size text;
 create index if not exists cars_price_idx on public.cars(price_per_day);
 create index if not exists cars_name_idx on public.cars(lower(name));
 create index if not exists cars_status_idx on public.cars(status);

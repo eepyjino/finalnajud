@@ -30,6 +30,7 @@
       <button class="side-btn active" data-tab="dashboard">Dashboard</button>
       <button class="side-btn" data-tab="cars">Cars &amp; Fleet</button>
       <button class="side-btn" data-tab="reservations">Bookings</button>
+      <button class="side-btn" data-tab="users">Users</button>
       <button class="side-btn" data-tab="maintenance">Maintenance</button>
       <button class="side-btn" data-tab="reports">Reports</button>
       <button class="side-btn" data-tab="settings">Settings</button>
@@ -112,6 +113,24 @@
       </table></div>
     </section>
 
+    <!-- USERS -->
+    <section id="tab-users" class="hidden">
+      <h2>Users</h2>
+      <p class="page-sub">Customer and administrator accounts</p>
+      <div class="stats user-stats">
+        <div class="stat"><span>Total users</span><strong id="userTotal">0</strong></div>
+        <div class="stat"><span>Customers</span><strong id="userCustomers">0</strong></div>
+        <div class="stat"><span>Administrators</span><strong id="userAdmins">0</strong></div>
+      </div>
+      <div class="toolbar">
+        <input id="userSearch" placeholder="Search name, email or role..." oninput="renderUsers()">
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>USER</th><th>EMAIL</th><th>JOINED</th><th>BOOKINGS</th><th>ROLE</th></tr></thead>
+        <tbody id="userRows"></tbody>
+      </table></div>
+    </section>
+
     <!-- MAINTENANCE -->
     <section id="tab-maintenance" class="hidden">
       <h2>Maintenance</h2>
@@ -145,9 +164,12 @@
     <h2 id="carModalTitle">Add Car</h2>
     <div id="carMsg" class="msg"></div>
     <input type="hidden" id="carId">
-    <img id="carPreview" class="preview hidden" alt="Preview">
-    <div class="field"><label for="carImage">Car Image (JPG, PNG, WEBP, max 2 MB)</label>
+    <img id="carPreview" class="preview hidden" alt="Exterior photo preview">
+    <div class="field"><label for="carImage">Exterior Photo (JPG, PNG, WEBP, max 2 MB)</label>
       <input type="file" id="carImage" accept="image/jpeg,image/png,image/webp" onchange="previewImage()"></div>
+    <img id="interiorPreview" class="preview hidden" alt="Interior photo preview">
+    <div class="field"><label for="interiorImage">Interior Photo (JPG, PNG, WEBP, max 2 MB)</label>
+      <input type="file" id="interiorImage" accept="image/jpeg,image/png,image/webp" onchange="previewInteriorImage()"></div>
     <div class="field"><label for="carName">Car Name</label><input id="carName" maxlength="80" placeholder="e.g. Toyota Vios"></div>
     <div class="row">
       <div class="field"><label for="carBrand">Brand</label><input id="carBrand" maxlength="50"></div>
@@ -166,6 +188,11 @@
       <div class="field"><label for="carTrans">Transmission</label><select id="carTrans"><option>Automatic</option><option>Manual</option></select></div>
       <div class="field"><label for="carFuel">Fuel Type</label><select id="carFuel"><option>Gasoline</option><option>Diesel</option><option>Hybrid</option><option>Electric</option></select></div>
     </div>
+    <div class="row">
+      <div class="field"><label for="carEngine">Engine</label><input id="carEngine" maxlength="80" placeholder="e.g. 1.5L 4-cylinder"></div>
+      <div class="field"><label for="carDrivetrain">Drivetrain</label><input id="carDrivetrain" maxlength="40" placeholder="e.g. FWD or AWD"></div>
+    </div>
+    <div class="field"><label for="carTireSize">Tire Size</label><input id="carTireSize" maxlength="40" placeholder="e.g. 205/55 R16"></div>
     <div class="field"><label for="carDesc">Description</label><textarea id="carDesc" maxlength="300"></textarea></div>
     <div class="toolbar"><button class="btn" type="submit" id="carSaveBtn">Save Car</button>
       <button class="btn light" type="button" onclick="closeCarModal()">Cancel</button></div>

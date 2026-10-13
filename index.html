@@ -14,48 +14,77 @@
 
     <!-- ================= NAVBAR ================= -->
     <header class="navbar">
-        <div class="logo">Abante<span>Rentals</span></div>
+        <a class="logo" href="#home" aria-label="Abante Rentals home">Abante<span>Rentals</span></a>
 
         <nav>
-            <a href="#home">Home</a>
-            <a href="#fleet">Our Fleet</a>
-            <a href="#about">About</a>
+            <a class="nav-current" href="#home">Car rentals</a>
+            <a href="#fleet">Our fleet</a>
+            <a href="#about">About us</a>
             <a href="#contact">Contact</a>
         </nav>
 
-        <a href="#fleet" class="nav-btn">Rent a Car</a>
+        <a href="#fleet" class="nav-btn"><i class="ti ti-search" aria-hidden="true"></i> Find a car</a>
     </header>
 
 
     <!-- ================= HERO ================= -->
     <section id="home" class="hero">
-
+        <img class="hero-image" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&amp;fit=crop&amp;w=2200&amp;q=85" alt="" fetchpriority="high">
         <div class="hero-content">
-            <p class="small-title">WELCOME TO ABANTE RENTALS</p>
+            <p class="small-title">ABANTE RENTALS · NEGROS OCCIDENTAL</p>
+            <h1>Car rentals<span class="hero-period">.</span></h1>
+            <p class="hero-text">Find a car for your next trip. Choose your dates and explore our local fleet.</p>
 
-            <h1>
-                Your Journey,
-                <span>Our Cars.</span>
-            </h1>
-
-            <p class="hero-text">
-                Find the perfect car for your next trip.
-                Easy booking, comfortable rides, and affordable prices.
-            </p>
-
-            <a href="#fleet" class="hero-btn">Explore Cars</a>
+            <form class="rental-search" onsubmit="searchFleetByDates(event)">
+                <div class="rental-search-field location-field">
+                    <i class="ti ti-map-pin" aria-hidden="true"></i>
+                    <div><span>Pick-up location</span><strong>San Carlos City</strong><small>Negros Occidental, Philippines</small></div>
+                </div>
+                <div class="rental-search-field date-field">
+                    <label for="searchPickupDate"><i class="ti ti-calendar" aria-hidden="true"></i><span>Pick-up</span></label>
+                    <input id="searchPickupDate" type="date" required>
+                </div>
+                <div class="rental-search-field date-field">
+                    <label for="searchReturnDate"><i class="ti ti-calendar-event" aria-hidden="true"></i><span>Return</span></label>
+                    <input id="searchReturnDate" type="date" required>
+                </div>
+                <button class="rental-search-button" type="submit"><i class="ti ti-search" aria-hidden="true"></i> Search cars</button>
+                <p id="rentalSearchMessage" class="rental-search-message" role="status" aria-live="polite"></p>
+            </form>
         </div>
+    </section>
 
+    <!-- ================= RENTAL BENEFITS ================= -->
+    <section class="rental-benefits" aria-label="Rental information">
+        <article class="benefit-item">
+            <i class="ti ti-calendar-check" aria-hidden="true"></i>
+            <div><h2>Easy booking requests</h2><p>Send your dates and details in a few steps.</p></div>
+        </article>
+        <article class="benefit-item">
+            <i class="ti ti-receipt-2" aria-hidden="true"></i>
+            <div><h2>Clear daily rates</h2><p>See the car’s rate and estimated rental total.</p></div>
+        </article>
+        <article class="benefit-item">
+            <i class="ti ti-car-garage" aria-hidden="true"></i>
+            <div><h2>Vehicle details up front</h2><p>Review available photos, features, and specifications.</p></div>
+        </article>
+        <article class="benefit-item">
+            <i class="ti ti-headset" aria-hidden="true"></i>
+            <div><h2>Local customer support</h2><p>Contact our rental team when you need assistance.</p></div>
+        </article>
     </section>
 
 
     <!-- ================= FLEET ================= -->
     <section id="fleet" class="fleet-section">
 
-        <div class="section-heading">
-            <p>OUR FLEET</p>
-            <h2>Choose Your Ride</h2>
-            <span>Find a vehicle that fits your journey.</span>
+        <div class="section-heading fleet-heading">
+            <div>
+                <p>OUR LOCAL FLEET</p>
+                <h2>Popular cars</h2>
+                <span>Compare daily prices and find the right ride for your trip.</span>
+            </div>
+            <a class="view-all-cars" href="#carGrid">View all cars <i class="ti ti-chevron-right" aria-hidden="true"></i></a>
         </div>
 
 
@@ -224,144 +253,145 @@
     </section>
 
 
+    <!-- ================= CAR DETAILS DIALOG ================= -->
+    <dialog id="carDetailsDialog" class="car-details-dialog" aria-labelledby="detailsTitle">
+        <div class="car-details-content">
+            <button class="close-modal" type="button" onclick="closeCarDetails()" aria-label="Close car details">&times;</button>
+            <p class="modal-label">VEHICLE DETAILS</p>
+            <h2 id="detailsTitle">Car</h2>
+            <p id="detailsPrice" class="details-price"></p>
+            <div id="detailsGallery" class="details-gallery"></div>
+            <p id="detailsDescription" class="details-description"></p>
+            <dl id="detailsSpecs" class="details-specs"></dl>
+            <button id="detailsReserveButton" class="submit-reservation" type="button" onclick="reserveFromDetails()">Reserve this car</button>
+        </div>
+    </dialog>
+
     <!-- ================= RESERVATION MODAL ================= -->
     <div id="reservationModal" class="modal">
-
         <div class="modal-content">
-
-            <button
-                class="close-modal"
-                onclick="closeReservation()"
-            >
-                &times;
-            </button>
-
+            <button class="close-modal" type="button" onclick="closeReservation()" aria-label="Close reservation">&times;</button>
             <p class="modal-label">ABANTE RENTALS RESERVATION</p>
-
             <h2>Reserve Your Car</h2>
 
-            <div class="selected-car">
+            <ol class="booking-progress" aria-label="Reservation steps">
+                <li class="current" aria-current="step"><span>1</span>Car &amp; dates</li>
+                <li><span>2</span>Driver details</li>
+                <li><span>3</span>Request sent</li>
+            </ol>
 
-                <p>Selected Vehicle</p>
-
-                <h3 id="selectedCar">
-                    Car
-                </h3>
-
-                <strong id="selectedPrice">
-                    ₱0 / day
-                </strong>
-
-            </div>
-
-
-            <form onsubmit="submitReservation(event)" novalidate>
-
+            <form id="reservationForm" onsubmit="submitReservation(event)" novalidate>
                 <div id="formError" class="form-error"></div>
 
-                <div class="form-group">
-
-                    <label for="customerName">
-                        Full Name
-                    </label>
-
-                    <input
-                        type="text"
-                        id="customerName"
-                        placeholder="Enter your name"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="customerEmail">
-                        Email
-                    </label>
-
-                    <input
-                        type="email"
-                        id="customerEmail"
-                        placeholder="Enter your email"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-row">
-
-                    <div class="form-group">
-
-                        <label for="pickupDate">
-                            Pickup Date
-                        </label>
-
-                        <input
-                            type="date"
-                            id="pickupDate"
-                            required
-                        >
-
+                <section id="reservationStep1" class="booking-step">
+                    <div class="booking-section-heading">
+                        <h3>Car details</h3>
+                        <p>Choose your rental dates to see an estimated total.</p>
                     </div>
-
-
-                    <div class="form-group">
-
-                        <label for="returnDate">
-                            Return Date
-                        </label>
-
-                        <input
-                            type="date"
-                            id="returnDate"
-                            required
-                        >
-
+                    <div class="booking-vehicle-card">
+                        <img id="selectedCarImage" alt="Selected rental car">
+                        <div>
+                            <span class="booking-kicker">SELECTED VEHICLE</span>
+                            <h3 id="selectedCar">Car</h3>
+                            <p id="selectedCarMeta"></p>
+                        </div>
+                        <strong id="selectedPrice">₱0 / day</strong>
                     </div>
+                    <div class="booking-section-heading pickup-heading">
+                        <h3>Pick-up &amp; drop-off</h3>
+                        <p>Select the first and last day of your rental.</p>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupDate">Pick-up date</label>
+                            <input type="date" id="pickupDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnDate">Return date</label>
+                            <input type="date" id="returnDate" required>
+                        </div>
+                    </div>
+                    <button class="submit-reservation" type="button" onclick="goReservationStep(2)">Continue to driver details</button>
+                </section>
 
-                </div>
+                <section id="reservationStep2" class="booking-step" hidden>
+                    <div class="booking-section-heading">
+                        <h3>Driver details</h3>
+                        <p>We’ll use these details to follow up on your request.</p>
+                    </div>
+                    <div class="booking-layout">
+                        <div class="driver-fields">
+                            <div class="form-group">
+                                <label for="customerName">Full name</label>
+                                <input type="text" id="customerName" placeholder="Enter your name" autocomplete="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerEmail">Email</label>
+                                <input type="email" id="customerEmail" placeholder="Enter your email" autocomplete="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerMessage">Additional message <span class="optional-label">Optional</span></label>
+                                <textarea id="customerMessage" rows="3" maxlength="500" placeholder="Any requests for the rental team?"></textarea>
+                            </div>
+                        </div>
+                        <aside class="booking-summary" aria-label="Booking estimate">
+                            <span class="booking-kicker">YOUR ESTIMATE</span>
+                            <h3 id="summaryCarName">Car</h3>
+                            <div><span>Daily rate</span><strong id="summaryDailyRate">₱0 / day</strong></div>
+                            <div><span>Rental days</span><strong id="summaryRentalDays">Choose dates</strong></div>
+                            <div class="summary-total"><span>Estimated total</span><strong id="reservationTotal">₱0</strong></div>
+                            <p>No payment is collected online. Your request is pending until confirmed by the rental team.</p>
+                        </aside>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="booking-back" type="button" onclick="goReservationStep(1)">Back</button>
+                        <button id="reservationSubmit" type="submit" class="submit-reservation">Send reservation request</button>
+                    </div>
+                </section>
 
-
-                <div class="form-group">
-
-                    <label for="customerMessage">
-                        Additional Message
-                    </label>
-
-                    <textarea
-                        id="customerMessage"
-                        rows="4"
-                        placeholder="Any additional request?"
-                    ></textarea>
-
-                </div>
-
-
-                <div class="reservation-range">
-
-                    <span>Rental Price</span>
-
-                    <strong id="reservationPrice">
-                        ₱0 / day
-                    </strong>
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="submit-reservation"
-                >
-                    Confirm Reservation
-                </button>
-
+                <section id="reservationStep3" class="booking-step booking-confirmation" hidden aria-live="polite">
+                    <span class="confirmation-mark" aria-hidden="true">&#10003;</span>
+                    <p class="booking-kicker">REQUEST RECEIVED</p>
+                    <h3>Thanks, <span id="confirmationName">driver</span>.</h3>
+                    <p>Your request for <strong id="confirmationCar">your selected car</strong> has been sent to Abante Rentals.</p>
+                    <div class="confirmation-summary">
+                        <span id="confirmationDates"></span>
+                        <strong id="confirmationEstimate"></strong>
+                        <span class="badge-pending">Pending confirmation</span>
+                    </div>
+                    <button class="submit-reservation" type="button" onclick="finishReservation()">Back to fleet</button>
+                </section>
             </form>
-
         </div>
+    </div>
 
+    <!-- ================= SUPPORT CHAT ================= -->
+    <div class="support-chat">
+        <section id="supportChatPanel" class="support-chat-panel" aria-labelledby="supportChatTitle" hidden>
+            <header class="support-chat-header">
+                <div>
+                    <h2 id="supportChatTitle">Abante Assist</h2>
+                    <p>Ask about cars, pricing, or bookings</p>
+                </div>
+                <button id="supportChatClose" class="support-chat-close" type="button" aria-label="Close chat">&times;</button>
+            </header>
+            <div id="supportChatMessages" class="support-chat-messages" role="log" aria-live="polite" aria-relevant="additions">
+                <p class="chat-message bot-message">Hi! Welcome to Abante Rentals. I can help with our cars, prices, specifications, and how to reserve.</p>
+            </div>
+            <div class="support-chat-prompts" aria-label="Suggested questions">
+                <button type="button" data-chat-prompt="What cars are available?">Available cars</button>
+                <button type="button" data-chat-prompt="How do I book a car?">Booking help</button>
+            </div>
+            <form id="supportChatForm" class="support-chat-form">
+                <label class="visually-hidden" for="supportChatInput">Your message</label>
+                <input id="supportChatInput" type="text" maxlength="240" placeholder="Ask us something..." autocomplete="off" required>
+                <button type="submit">Send</button>
+            </form>
+        </section>
+        <button id="supportChatLauncher" class="support-chat-launcher" type="button" aria-expanded="false" aria-controls="supportChatPanel">
+            <i class="ti ti-message-chatbot" aria-hidden="true"></i>
+            <span>Chat with us</span>
+        </button>
     </div>
 
 
