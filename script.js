@@ -498,61 +498,87 @@ function appendChatMessage(text, sender) {
 }
 
 function getChatReply(question) {
-    const query = question.toLowerCase();
-    const matchedCar = cars.find(function (car) {
-        return query.includes(String(car.name || "").toLowerCase());
+    const query = question.toLowerCase().replace(/\s+/g, " ").trim();
+    const matchedCar = cars.slice().sort(function (first, second) {
+        return String(second.name || "").length - String(first.name || "").length;
+    }).find(function (car) {
+        return String(car.name || "").trim() && query.includes(String(car.name).toLowerCase());
     });
+    const durationMatch = query.match(/\b(\d+)\s*(?:days?|nights?)\b/);
+    const duration = durationMatch ? Number(durationMatch[1]) : 0;
 
     if (/\b(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(query)) {
-        return "Hello! Welcome to Abante Rentals. Ask me about available cars, prices, specs, or reservations.";
+        return "Hello! Welcome to Abante Rentals. I can look up the live fleet and daily rates, estimate a multi-day rental, compare cars, or walk you through a reservation. What are you planning?";
+    }
+
+    if (/\b(compare|comparison|cheapest|cheaper|lowest|budget|affordable|price range)\b/.test(query)) {
+        if (!cars.length) return "The fleet is still loading. Please try again in a moment.";
+        const sortedCars = cars.slice().sort(function (first, second) {
+            return Number(first.price_per_day) - Number(second.price_per_day);
+        });
+        return "Here is the fleet ordered by listed daily rate, lowest first:\n" + sortedCars.map(function (car) {
+            return car.name + " - " + peso(car.price_per_day) + "/day, " + (car.seats || "seat count not listed") + " seats, " + (car.status === "available" ? "currently listed as available" : car.status);
+        }).join("\n") + "\nRates are daily estimates. Enter your dates in the booking form to see an estimated total; the team confirms availability and the final amount.";
+    }
+
+    if (/\b(cancel|cancellation|refund|deposit|insurance|coverage|license|licence|driver age|minimum age|mileage|kilomet)\b/.test(query)) {
+        return "I don't have a confirmed policy for that detail, so I don't want to guess. Please contact the rental team at 0912 345 6789 or abanterentals@email.com; they can confirm the current terms before you book.";
+    }
+
+    if (/\b(payment|pay|card|cash)\b/.test(query)) {
+        return "No payment is collected online when you submit a reservation request. The request stays pending until the rental team confirms it. For accepted payment methods or payment timing, please call 0912 345 6789 or email abanterentals@email.com.";
+    }
+
+    if (/\b(book|booking|reserve|reservation)\b/.test(query)) {
+        return "To request a booking:\n1. Choose a car marked available and select Reserve Now.\n2. Enter your pickup and return dates, then your name and email.\n3. Review the rental-day count and estimated total, then submit.\nYour request is sent as pending; it is not confirmed until the rental team approves it. No payment is collected online during the request.";
     }
 
     if (matchedCar) {
-        return [
+        const details = [
             matchedCar.name + " | " + peso(matchedCar.price_per_day) + " per day",
-            "Availability: " + (matchedCar.status === "available" ? "Available" : matchedCar.status),
+            "Fleet status: " + (matchedCar.status === "available" ? "Currently listed as available" : matchedCar.status),
             "Year: " + (matchedCar.year || "Not provided") + " | Seats: " + (matchedCar.seats || "Not provided"),
             "Engine: " + (matchedCar.engine || "Not provided"),
             "Transmission: " + (matchedCar.transmission || "Not provided") + " | Fuel: " + (matchedCar.fuel_type || "Not provided"),
             "Drivetrain: " + (matchedCar.drivetrain || "Not provided") + " | Tire size: " + (matchedCar.tire_size || "Not provided"),
             matchedCar.description || "Ask us if you need more information about this car."
-        ].join("\n");
-    }
-
-    if (/\b(book|booking|reserve|reservation)\b/.test(query)) {
-        return "Choose an available car and select Reserve Now. Enter your name, email, pickup date, and return date, then submit. Your request will be sent as pending for confirmation.";
+        ];
+        if (duration > 0 && /\b(price|cost|total|rate|rent|much|estimate|budget)\b/.test(query)) {
+            details.splice(1, 0, "Estimated " + duration + "-day total: " + peso(Number(matchedCar.price_per_day) * duration) + " based on the listed daily rate. Exact dates may change the rental-day count; the booking form shows the estimate and the rental team confirms the final amount.");
+        }
+        details.push("For date-specific availability, choose Reserve Now and enter your pickup and return dates.");
+        return details.join("\n");
     }
 
     if (/\b(location|address|where|visit|find us)\b/.test(query)) {
-        return "We are at Central Philippines State University, Main Campus, San Carlos City, Negros Occidental, Philippines.";
+        return "Abante Rentals is at Central Philippines State University, Main Campus, San Carlos City, Negros Occidental, Philippines. Call 0912 345 6789 if you need directions before visiting.";
     }
 
     if (/\b(hours|open|opening|business hours|time)\b/.test(query)) {
-        return "Business hours: Monday to Friday, 8 AM–6 PM; Saturday, 9 AM–4 PM; Sunday, closed.";
+        return "Business hours are Monday-Friday, 8 AM-6 PM, and Saturday, 9 AM-4 PM. We are closed Sunday. Messages received during business hours are typically answered within 2 hours.";
     }
 
-    if (/\b(contact|phone|call|email|reach)\b/.test(query)) {
-        return "Call us at 0912 345 6789 or email abanterentals@email.com. We typically respond within 2 hours during business hours.";
+    if (/\b(contact|phone|call|email|reach|talk to|human|person|agent)\b/.test(query)) {
+        return "You can call us at 0912 345 6789 or email abanterentals@email.com. We typically respond within 2 hours during business hours: Monday-Friday, 8 AM-6 PM; Saturday, 9 AM-4 PM.";
     }
 
     if (/\b(about|who are you|your shop|your company|what do you do)\b/.test(query)) {
-        return "Abante Rentals offers convenient car rentals for city trips, family travel, and weekend adventures. Browse the fleet to compare vehicles and daily rates.";
+        return "Abante Rentals helps customers compare local vehicles and request rentals for city trips, family travel, and weekends. Each listing shows its daily rate and available vehicle details. You can submit a reservation online, then the rental team reviews and confirms it.";
     }
 
-    if (/\b(engine|tire|tyre|drivetrain|transmission|fuel|seat|spec|price|cost|how much|fleet|cars|car|vehicle|available)\b/.test(query)) {
+    if (/\b(engine|tire|tyre|drivetrain|transmission|fuel|seat|spec|price|cost|how much|fleet|cars|car|vehicle|available|availability|family|seats)\b/.test(query)) {
         if (!cars.length) return "The fleet is still loading. Please try again in a moment.";
         const availableOnly = /\b(available|availability)\b/.test(query);
         const listedCars = availableOnly ? cars.filter(function (car) { return car.status === "available"; }) : cars;
         if (!listedCars.length) return "There are no cars currently marked available. Please contact us for help.";
-        return (availableOnly ? "Currently available:" : "Here are the cars in our fleet:") + "\n" +
-            listedCars.slice(0, 6).map(function (car) {
-                return "• " + car.name + " — " + peso(car.price_per_day) + "/day";
+        return (availableOnly ? "Cars currently listed as available:" : "Here is the current fleet:") + "\n" +
+            listedCars.map(function (car) {
+                return car.name + " - " + peso(car.price_per_day) + "/day | " + (car.seats || "Seats not listed") + " seats | " + (car.transmission || "Transmission not listed") + " | " + (car.fuel_type || "Fuel not listed");
             }).join("\n") +
-            (listedCars.length > 6 ? "\n...and " + (listedCars.length - 6) + " more. See Our Fleet for all listings." : "") +
-            "\nAsk me about a specific car for its listed specs and availability.";
+            "\nAvailability can change and is not date-specific here. Open a car's booking form to check your dates and see its full listing.";
     }
 
-    return "I can help with our cars, prices, specifications, reservations, business hours, location, and contact details. For a specific car, include its name in your question.";
+    return "I can help with live fleet details, daily rates, vehicle comparisons, booking steps, business hours, and location. Try asking 'Compare the cars', 'How much for 3 days in [car name]?', or 'How do I reserve?' For cancellation, insurance, deposits, or driver requirements, contact us at 0912 345 6789 so we can give you the confirmed policy.";
 }
 
 function sendSupportMessage(text) {
