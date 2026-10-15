@@ -507,10 +507,12 @@ footer small { color: #7b8799; }
 .support-chat-form input:focus-visible, .support-chat-close:focus-visible, .support-chat-prompts button:focus-visible, .support-chat-launcher:focus-visible { outline-color: var(--blue); }
 
 .nav-account {
-    margin-top: auto; padding: 9px 12px; border: 1px solid #38383e; border-radius: 2px;
-    background: transparent; color: #ededf0; font: inherit; font-size: 12px; cursor: pointer;
+    margin-top: auto; padding: 10px 15px; border: 1px solid #c8d7ff; border-radius: 5px;
+    background: #edf2ff; color: #2455dc; font: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s, transform .2s;
 }
-.nav-account:hover { border-color: #ededf0; }
+.nav-account:hover { transform: translateY(-1px); border-color: #2f65f5; background: #e3ebff; box-shadow: 0 4px 12px rgba(47, 101, 245, .14); }
+.nav-account:focus-visible { outline: 2px solid #2f65f5; outline-offset: 3px; }
 .navbar .nav-account + .nav-btn { margin-top: 8px; }
 .account-dialog {
     position: relative; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto;
