@@ -9,6 +9,118 @@ let cars = [];
 let selectedCarId = null;
 let selectedDetailsCarId = null;
 let dateSearch = null;
+let currentCustomer = null;
+let accountMode = "login";
+
+
+/* ================= CUSTOMER ACCOUNT ================= */
+
+function openAccountDialog() {
+    const dialog = document.getElementById("accountDialog");
+    updateAccountDialog();
+    dialog.showModal();
+}
+
+function closeAccountDialog() {
+    document.getElementById("accountDialog").close();
+}
+
+function toggleAccountMode() {
+    accountMode = accountMode === "login" ? "signup" : "login";
+    const registering = accountMode === "signup";
+    document.getElementById("accountTitle").textContent = registering ? "Create your account" : "Sign in";
+    document.getElementById("accountNameGroup").hidden = !registering;
+    document.getElementById("accountName").required = registering;
+    document.getElementById("accountPassword").autocomplete = registering ? "new-password" : "current-password";
+    document.getElementById("accountSubmit").textContent = registering ? "Create account" : "Sign in";
+    document.getElementById("accountModeToggle").textContent = registering ? "Already have an account? Sign in" : "Create an account";
+    document.getElementById("accountMessage").textContent = "";
+}
+
+function updateCustomerAccount(user) {
+    currentCustomer = user;
+    const button = document.getElementById("accountButton");
+    if (!button) return;
+    button.textContent = user ? "My account" : "Sign in";
+    button.setAttribute("aria-label", user ? "Open account for " + user.email : "Sign in or create an account");
+    button.title = user ? user.email : "Sign in or create an account";
+
+    const nameInput = document.getElementById("customerName");
+    const emailInput = document.getElementById("customerEmail");
+    if (user) {
+        if (nameInput && !nameInput.value) nameInput.value = user.user_metadata.full_name || "";
+        if (emailInput && !emailInput.value) emailInput.value = user.email || "";
+    }
+    if (document.getElementById("accountDialog").open) updateAccountDialog();
+}
+
+function updateAccountDialog() {
+    const signedIn = !!currentCustomer;
+    document.getElementById("accountForm").hidden = signedIn;
+    document.getElementById("accountIdentity").hidden = !signedIn;
+    document.getElementById("accountIdentity").textContent = signedIn ? "Signed in as " + currentCustomer.email : "";
+    document.getElementById("accountModeToggle").hidden = signedIn;
+    document.getElementById("accountSignout").hidden = !signedIn;
+    document.getElementById("accountTitle").textContent = signedIn ? "Your account" : accountMode === "signup" ? "Create your account" : "Sign in";
+}
+
+async function submitAccountForm(event) {
+    event.preventDefault();
+    const email = document.getElementById("accountEmail").value.trim();
+    const password = document.getElementById("accountPassword").value;
+    const name = document.getElementById("accountName").value.trim();
+    const message = document.getElementById("accountMessage");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        message.textContent = "Enter a valid email address.";
+        return;
+    }
+    if (password.length < 8) {
+        message.textContent = "Password must be at least 8 characters.";
+        return;
+    }
+    if (accountMode === "signup" && name.length < 2) {
+        message.textContent = "Enter your full name.";
+        return;
+    }
+
+    const submit = document.getElementById("accountSubmit");
+    submit.disabled = true;
+    message.textContent = "";
+    try {
+        if (accountMode === "signup") {
+            const { data, error } = await sb.auth.signUp({
+                email,
+                password,
+                options: { data: { full_name: name } }
+            });
+            if (error) throw error;
+            if (data.session) {
+                updateCustomerAccount(data.user);
+                message.textContent = "Your account is ready. You can now reserve cars.";
+            } else {
+                message.textContent = "Check your email to confirm your account, then sign in.";
+            }
+        } else {
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            updateCustomerAccount(data.user);
+            message.textContent = "You are signed in. Your reservations will be linked to your account.";
+        }
+    } catch (error) {
+        message.textContent = error.message || "Account request failed. Please try again.";
+    } finally {
+        submit.disabled = false;
+    }
+}
+
+async function signOutCustomer() {
+    const { error } = await sb.auth.signOut();
+    if (error) {
+        document.getElementById("accountMessage").textContent = "Sign out failed. Please try again.";
+        return;
+    }
+    closeAccountDialog();
+}
 
 
 /* ================= CURRENCY ================= */
@@ -147,6 +259,10 @@ function openReservation(carId) {
     const modal = document.getElementById("reservationModal");
     const form = document.getElementById("reservationForm");
     form.reset();
+    if (currentCustomer) {
+        document.getElementById("customerName").value = currentCustomer.user_metadata.full_name || "";
+        document.getElementById("customerEmail").value = currentCustomer.email || "";
+    }
     showFormError("");
     goReservationStep(1, false);
 
@@ -487,6 +603,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loadCars();
     initSupportChat();
+    sb.auth.getSession().then(function ({ data }) {
+        updateCustomerAccount(data.session ? data.session.user : null);
+    });
+    sb.auth.onAuthStateChange(function (_event, session) {
+        updateCustomerAccount(session ? session.user : null);
+    });
 
 
     /* CLOSE MODAL WHEN CLICKING OUTSIDE */
@@ -505,6 +627,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     detailsDialog.addEventListener("close", function () {
         if (!modal.classList.contains("show")) document.body.classList.remove("modal-open");
+    });
+    const accountDialog = document.getElementById("accountDialog");
+    accountDialog.addEventListener("click", function (event) {
+        if (event.target === accountDialog) closeAccountDialog();
     });
 
 

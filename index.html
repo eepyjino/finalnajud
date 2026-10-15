@@ -28,6 +28,7 @@
             <a href="#contact">Contact</a>
         </nav>
 
+        <button id="accountButton" class="nav-account" type="button" onclick="openAccountDialog()">Sign in</button>
         <a href="#fleet" class="nav-btn"><i class="ti ti-search" aria-hidden="true"></i> Find a car</a>
     </header>
 
@@ -257,6 +258,34 @@
 
     </section>
 
+
+    <!-- ================= CUSTOMER ACCOUNT DIALOG ================= -->
+    <dialog id="accountDialog" class="account-dialog" aria-labelledby="accountTitle">
+        <button class="close-modal" type="button" onclick="closeAccountDialog()" aria-label="Close account dialog">&times;</button>
+        <p class="modal-label">ABANTE RENTALS ACCOUNT</p>
+        <h2 id="accountTitle">Sign in</h2>
+        <p id="accountIdentity" class="account-identity" hidden></p>
+        <p id="accountMessage" class="account-message" role="status" aria-live="polite"></p>
+        <form id="accountForm" onsubmit="submitAccountForm(event)" novalidate>
+            <div id="accountNameGroup" class="form-group" hidden>
+                <label for="accountName">Full name</label>
+                <input id="accountName" type="text" autocomplete="name" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="accountEmail">Email</label>
+                <input id="accountEmail" type="email" autocomplete="email" required>
+            </div>
+            <div class="form-group">
+                <label for="accountPassword">Password</label>
+                <input id="accountPassword" type="password" autocomplete="current-password" minlength="8" required>
+            </div>
+            <button id="accountSubmit" class="submit-reservation" type="submit">Sign in</button>
+        </form>
+        <div class="account-actions">
+            <button id="accountModeToggle" type="button" onclick="toggleAccountMode()">Create an account</button>
+            <button id="accountSignout" type="button" onclick="signOutCustomer()" hidden>Sign out</button>
+        </div>
+    </dialog>
 
     <!-- ================= CAR DETAILS DIALOG ================= -->
     <dialog id="carDetailsDialog" class="car-details-dialog" aria-labelledby="detailsTitle">

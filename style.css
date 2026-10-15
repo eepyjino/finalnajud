@@ -506,8 +506,31 @@ footer small { color: #7b8799; }
 .support-chat-form button, .support-chat-launcher { border-color: var(--blue); background: var(--blue); color: #fff; }
 .support-chat-form input:focus-visible, .support-chat-close:focus-visible, .support-chat-prompts button:focus-visible, .support-chat-launcher:focus-visible { outline-color: var(--blue); }
 
+.nav-account {
+    margin-top: auto; padding: 9px 12px; border: 1px solid #38383e; border-radius: 2px;
+    background: transparent; color: #ededf0; font: inherit; font-size: 12px; cursor: pointer;
+}
+.nav-account:hover { border-color: #ededf0; }
+.navbar .nav-account + .nav-btn { margin-top: 8px; }
+.account-dialog {
+    position: relative; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto;
+    padding: 30px; overflow-y: auto; border: 1px solid #28282d; border-radius: 6px;
+    background: #0d0d10; color: #ededf0; box-shadow: 0 20px 70px rgba(0, 0, 0, .6);
+}
+.account-dialog::backdrop { background: rgba(5, 5, 7, .78); }
+.account-dialog h2 { margin: 6px 42px 20px 0; font-size: 24px; }
+.account-dialog .form-group[hidden], .account-dialog [hidden] { display: none; }
+.account-dialog .form-group label { color: #cfd6e6; }
+.account-dialog .form-group input { width: 100%; min-height: 44px; padding: 12px; border: 1px solid #28282d; border-radius: 3px; background: #1b1c20; color: #fff; font: inherit; }
+.account-dialog .form-group input:focus { border-color: #e8e8eb; outline: 2px solid rgba(255, 255, 255, .08); }
+.account-message { min-height: 20px; margin: 0 0 12px; color: #b8b8c0; font-size: 12px; }
+.account-identity { margin: 0 0 20px; color: #b8b8c0; overflow-wrap: anywhere; }
+.account-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.account-actions button { padding: 4px 0; border: 0; background: transparent; color: #b8b8c0; font: inherit; font-size: 11px; text-align: left; cursor: pointer; }
+.account-actions button:hover { color: #fff; }
+
 @media (max-width: 900px) {
-    .navbar { grid-template-columns: auto 1fr auto; gap: 14px; padding: 0 18px; }
+    .navbar { grid-template-columns: auto 1fr auto auto; gap: 14px; padding: 0 18px; }
     .navbar nav { gap: 12px; }
     .navbar nav a { font-size: 11px; }
     .rental-search { grid-template-columns: minmax(0, 1.2fr) 1fr 1fr; }
@@ -517,11 +540,12 @@ footer small { color: #7b8799; }
     .car-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
-    .navbar { grid-template-columns: 1fr auto; min-height: 60px; gap: 2px 12px; padding: 8px 14px 0; }
+    .navbar { grid-template-columns: 1fr auto auto; min-height: 60px; gap: 2px 8px; padding: 8px 14px 0; }
     .logo { font-size: 19px; }
     .navbar nav { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: space-between; gap: 4px; overflow-x: auto; }
     .navbar nav a { padding: 8px 2px 9px; font-size: 11px; }
     .nav-btn { padding: 9px 11px; font-size: 11px; }
+    .nav-account { margin-top: 0; padding: 8px 10px; font-size: 11px; }
     .hero { min-height: 530px; padding: 42px 16px 52px; }
     .hero-image { object-position: 59% center; }
     .hero h1 { font-size: 36px; }

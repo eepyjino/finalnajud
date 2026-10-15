@@ -29,7 +29,7 @@ The car rental site loads its fleet and reservations from Supabase. The customer
    (Never use the service_role key.)
 5. Open the site root `/` for customers and `/admin/` for the admin dashboard. Use Five Server, VS Code Live Server, or any static host that serves directory index files.
 
-Optional: Authentication > Providers > Email: disable public sign-ups so nobody else can register.
+Customers can create accounts from **Sign in** on the front page. New accounts are added to `profiles` as customers and appear in Admin > Users. If email confirmation is enabled in Supabase, customers must confirm their address before signing in. Keep public sign-ups enabled to allow customer registration.
 
 ## Data structures
 | Data Structure | Purpose | Where used | Why selected |
@@ -63,7 +63,7 @@ Optional: Authentication > Providers > Email: disable public sign-ups so nobody 
 5. Admin confirms the next in queue (or sets any status), and each change is pushed on the action stack (undoable).
 
 ## Test checklist
-1. Open `/`: the landing page loads. 2. Cars appear from Supabase. 3. Open `/admin/` and add a car. 4. Refresh the customer site: new car shows. 5. Search and filter dates. 6. Reserve a car. 7. Admin > Bookings shows it. 8. Edit a car: changes appear on the site. 9. Delete a car: it leaves the fleet. 10. Not logged in, run `sb.from('cars').delete()` in the browser console: RLS blocks the delete. 11. Search. 12. Sort.
+1. Open `/`: the landing page loads. 2. Create a customer account using **Sign in**. 3. Open `/admin/` and confirm the account appears under Users. 4. Sign in on the customer site and submit a reservation; Admin > Bookings shows it linked to that user. 5. Cars appear from Supabase. 6. Add a car in Admin and refresh the customer site. 7. Search and filter dates. 8. Edit or delete a car and confirm the fleet updates. 9. Not logged in, run `sb.from('cars').delete()` in the browser console: RLS blocks the delete. 10. Search. 11. Sort.
 
 ## Presentation script (beginner-friendly)
 - **Purpose:** an online car rental where customers browse and reserve cars and an admin manages the fleet.
