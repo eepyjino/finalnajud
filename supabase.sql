@@ -79,6 +79,34 @@ create table if not exists public.reservations (
     car_id with =, daterange(pickup_date, return_date, '[]') with &&
   ) where (status in ('pending','confirmed'))
 );
+
+-- Customers may cancel only their own pending bookings.
+create or replace function public.cancel_my_reservation(p_reservation_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  affected_rows integer;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  update public.reservations
+  set status = 'cancelled'
+  where id = p_reservation_id
+    and customer_id = auth.uid()
+    and status = 'pending';
+
+  get diagnostics affected_rows = row_count;
+  return affected_rows = 1;
+end;
+$$;
+revoke all on function public.cancel_my_reservation(uuid) from public;
+grant execute on function public.cancel_my_reservation(uuid) to authenticated;
+
 create index if not exists res_car_idx on public.reservations(car_id);
 create index if not exists res_status_idx on public.reservations(status, created_at);
 

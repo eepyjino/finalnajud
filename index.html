@@ -281,6 +281,29 @@
             </div>
             <button id="accountSubmit" class="submit-reservation" type="submit">Sign in</button>
         </form>
+        <section id="accountDashboard" class="account-dashboard" hidden aria-labelledby="accountBookingsTitle">
+            <div class="account-metrics" aria-label="Booking summary">
+                <div><span>Total bookings</span><strong id="accountBookingCount">0</strong></div>
+                <div><span>Upcoming</span><strong id="accountUpcomingCount">0</strong></div>
+                <div><span>Estimated rental value</span><strong id="accountRentalValue">₱0</strong></div>
+            </div>
+            <p class="account-estimate-note">Rental values are estimates based on listed daily rates. Online payments are not recorded here.</p>
+            <div class="account-bookings-heading">
+                <div>
+                    <h3 id="accountBookingsTitle">Recent bookings</h3>
+                    <p>Your reservation history, newest first.</p>
+                </div>
+            </div>
+            <div class="account-filters" role="group" aria-label="Filter bookings">
+                <button type="button" aria-pressed="true" onclick="setAccountFilter('all', this)">All</button>
+                <button type="button" aria-pressed="false" onclick="setAccountFilter('upcoming', this)">Upcoming</button>
+                <button type="button" aria-pressed="false" onclick="setAccountFilter('past', this)">Past</button>
+                <button type="button" aria-pressed="false" onclick="setAccountFilter('cancelled', this)">Cancelled</button>
+            </div>
+            <div id="accountBookings" class="account-bookings" role="list" aria-live="polite">
+                <p class="account-bookings-message">Your bookings will appear here.</p>
+            </div>
+        </section>
         <div class="account-actions">
             <button id="accountModeToggle" type="button" onclick="toggleAccountMode()">Create an account</button>
             <button id="accountSignout" type="button" onclick="signOutCustomer()" hidden>Sign out</button>

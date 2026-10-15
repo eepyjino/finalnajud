@@ -515,7 +515,7 @@ footer small { color: #7b8799; }
 .nav-account:focus-visible { outline: 2px solid #2f65f5; outline-offset: 3px; }
 .navbar .nav-account + .nav-btn { margin-top: 8px; }
 .account-dialog {
-    position: relative; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto;
+    position: relative; width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto;
     padding: 30px; overflow-y: auto; border: 1px solid #28282d; border-radius: 6px;
     background: #0d0d10; color: #ededf0; box-shadow: 0 20px 70px rgba(0, 0, 0, .6);
 }
@@ -530,6 +530,32 @@ footer small { color: #7b8799; }
 .account-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; }
 .account-actions button { padding: 4px 0; border: 0; background: transparent; color: #b8b8c0; font: inherit; font-size: 11px; text-align: left; cursor: pointer; }
 .account-actions button:hover { color: #fff; }
+.account-dashboard { margin-top: 22px; }
+.account-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid #28282d; }
+.account-metrics > div { min-width: 0; padding: 14px 12px; border-right: 1px solid #28282d; }
+.account-metrics > div:first-child { padding-left: 0; }
+.account-metrics > div:last-child { padding-right: 0; border-right: 0; }
+.account-metrics span, .account-bookings-heading p { display: block; color: #92929b; font-size: 11px; }
+.account-metrics strong { display: block; margin-top: 4px; color: #f1f1f3; font-size: 18px; font-weight: 500; overflow-wrap: anywhere; }
+.account-estimate-note { margin-top: 8px; color: #92929b; font-size: 10px; }
+.account-bookings-heading { display: flex; justify-content: space-between; align-items: end; margin-top: 24px; }
+.account-bookings-heading h3 { font-size: 16px; font-weight: 500; }
+.account-filters { display: flex; gap: 6px; margin: 14px 0 4px; overflow-x: auto; }
+.account-filters button { min-height: 38px; padding: 0 12px; border: 1px solid #28282d; border-radius: 2px; background: transparent; color: #b8b8c0; font: inherit; font-size: 11px; cursor: pointer; }
+.account-filters button[aria-pressed="true"] { border-color: #ededf0; background: #ededf0; color: #101013; }
+.account-filters button:focus-visible, .account-cancel-booking:focus-visible { outline: 2px solid #ededf0; outline-offset: 2px; }
+.account-bookings { margin-top: 8px; }
+.account-bookings-message { padding: 20px 0; color: #92929b; font-size: 12px; }
+.account-booking { padding: 16px 0; border-top: 1px solid #28282d; }
+.account-booking-top, .account-booking-details { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.account-booking-top h4 { font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+.account-booking-top > div > span { color: #92929b; font-size: 10px; }
+.account-booking-status { flex: 0 0 auto; padding: 2px 7px; border: 1px solid #424249; color: #d4d4da; font-size: 10px; }
+.account-booking-status.status-confirmed, .account-booking-status.status-completed { border-color: #527b63; color: #bde1c8; }
+.account-booking-status.status-cancelled { border-color: #805d5d; color: #e2baba; }
+.account-booking-details { align-items: center; margin-top: 10px; color: #b8b8c0; font-size: 11px; }
+.account-booking-details strong { color: #f1f1f3; font-size: 12px; font-weight: 500; }
+.account-cancel-booking { margin-top: 10px; padding: 7px 0; border: 0; background: transparent; color: #e2baba; font: inherit; font-size: 11px; text-decoration: underline; cursor: pointer; }
 
 @media (max-width: 900px) {
     .navbar { grid-template-columns: auto 1fr auto auto; gap: 14px; padding: 0 18px; }
@@ -542,6 +568,11 @@ footer small { color: #7b8799; }
     .car-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
+    .account-dialog { padding: 24px 18px; }
+    .account-metrics > div { padding: 12px 8px; }
+    .account-metrics strong { font-size: 15px; }
+    .account-filters { gap: 4px; }
+    .account-filters button { padding: 0 9px; }
     .navbar { grid-template-columns: 1fr auto auto; min-height: 60px; gap: 2px 8px; padding: 8px 14px 0; }
     .logo { font-size: 19px; }
     .navbar nav { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: space-between; gap: 4px; overflow-x: auto; }

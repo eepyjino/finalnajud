@@ -11,6 +11,9 @@ let selectedDetailsCarId = null;
 let dateSearch = null;
 let currentCustomer = null;
 let accountMode = "login";
+let accountReservations = [];
+let accountFilter = "all";
+let accountRequestId = 0;
 
 
 /* ================= CUSTOMER ACCOUNT ================= */
@@ -19,6 +22,7 @@ function openAccountDialog() {
     const dialog = document.getElementById("accountDialog");
     updateAccountDialog();
     dialog.showModal();
+    if (currentCustomer) loadCustomerReservations();
 }
 
 function closeAccountDialog() {
@@ -59,9 +63,118 @@ function updateAccountDialog() {
     document.getElementById("accountForm").hidden = signedIn;
     document.getElementById("accountIdentity").hidden = !signedIn;
     document.getElementById("accountIdentity").textContent = signedIn ? "Signed in as " + currentCustomer.email : "";
+    document.getElementById("accountDashboard").hidden = !signedIn;
     document.getElementById("accountModeToggle").hidden = signedIn;
     document.getElementById("accountSignout").hidden = !signedIn;
     document.getElementById("accountTitle").textContent = signedIn ? "Your account" : accountMode === "signup" ? "Create your account" : "Sign in";
+}
+
+function formatAccountDate(value) {
+    return new Date(value + "T00:00:00").toLocaleDateString(undefined, {
+        month: "short", day: "numeric", year: "numeric"
+    });
+}
+
+function reservationDays(reservation) {
+    return Math.round((new Date(reservation.return_date) - new Date(reservation.pickup_date)) / 86400000) + 1;
+}
+
+async function loadCustomerReservations() {
+    const list = document.getElementById("accountBookings");
+    const userId = currentCustomer && currentCustomer.id;
+    if (!userId) return;
+
+    const requestId = ++accountRequestId;
+    list.innerHTML = '<p class="account-bookings-message">Loading your bookings...</p>';
+    const { data, error } = await sb.from("reservations")
+        .select("id, pickup_date, return_date, status, created_at, cars(name, price_per_day)")
+        .eq("customer_id", userId)
+        .order("created_at", { ascending: false });
+
+    if (requestId !== accountRequestId || !currentCustomer || currentCustomer.id !== userId) return;
+    if (error) {
+        list.innerHTML = '<p class="account-bookings-message">Could not load bookings. Please try again.</p>';
+        console.error(error);
+        return;
+    }
+
+    accountReservations = data || [];
+    renderCustomerAccount();
+}
+
+function setAccountFilter(filter, button) {
+    accountFilter = filter;
+    document.querySelectorAll(".account-filters button").forEach(function (item) {
+        item.setAttribute("aria-pressed", String(item === button));
+    });
+    renderCustomerAccount();
+}
+
+function renderCustomerAccount() {
+    const today = new Date().toISOString().split("T")[0];
+    const activeReservations = accountReservations.filter(function (reservation) {
+        return reservation.status !== "cancelled";
+    });
+    const upcoming = activeReservations.filter(function (reservation) {
+        return reservation.return_date >= today && ["pending", "confirmed"].includes(reservation.status);
+    });
+    const estimatedValue = activeReservations.reduce(function (total, reservation) {
+        const car = reservation.cars;
+        return total + (car ? Number(car.price_per_day) * reservationDays(reservation) : 0);
+    }, 0);
+
+    document.getElementById("accountBookingCount").textContent = String(accountReservations.length);
+    document.getElementById("accountUpcomingCount").textContent = String(upcoming.length);
+    document.getElementById("accountRentalValue").textContent = peso(estimatedValue);
+
+    const filtered = accountReservations.filter(function (reservation) {
+        if (accountFilter === "cancelled") return reservation.status === "cancelled";
+        if (accountFilter === "upcoming") return upcoming.includes(reservation);
+        if (accountFilter === "past") return reservation.return_date < today || reservation.status === "completed";
+        return true;
+    });
+    const list = document.getElementById("accountBookings");
+    if (!filtered.length) {
+        const emptyMessage = accountReservations.length
+            ? "No bookings match this filter."
+            : "No bookings yet. Choose a car from the fleet to make your first reservation.";
+        list.innerHTML = '<p class="account-bookings-message">' + emptyMessage + '</p>';
+        return;
+    }
+
+    list.innerHTML = filtered.map(function (reservation) {
+        const car = reservation.cars;
+        const carName = car ? car.name : "Car listing unavailable";
+        const estimate = car ? peso(Number(car.price_per_day) * reservationDays(reservation)) : "Unavailable";
+        const status = reservation.status.charAt(0).toUpperCase() + reservation.status.slice(1);
+        const canCancel = reservation.status === "pending";
+        return '<article class="account-booking" role="listitem">' +
+            '<div class="account-booking-top"><div><h4>' + esc(carName) + '</h4>' +
+            '<span>Requested ' + formatAccountDate(reservation.created_at.slice(0, 10)) + '</span></div>' +
+            '<span class="account-booking-status status-' + esc(reservation.status) + '">' + esc(status) + '</span></div>' +
+            '<div class="account-booking-details"><span>' + formatAccountDate(reservation.pickup_date) + ' - ' + formatAccountDate(reservation.return_date) + '</span>' +
+            '<strong>' + estimate + '</strong></div>' +
+            (canCancel ? '<button class="account-cancel-booking" type="button" onclick="cancelCustomerReservation(\'' + reservation.id + '\')">Cancel pending booking</button>' : '') +
+            '</article>';
+    }).join("");
+}
+
+async function cancelCustomerReservation(reservationId) {
+    if (!confirm("Cancel this pending booking?")) return;
+    const message = document.getElementById("accountMessage");
+    message.textContent = "Cancelling booking...";
+    const { data, error } = await sb.rpc("cancel_my_reservation", { p_reservation_id: reservationId });
+    if (error) {
+        message.textContent = error.message || "Could not cancel this booking.";
+        return;
+    }
+    if (!data) {
+        message.textContent = "This booking can no longer be cancelled.";
+        await loadCustomerReservations();
+        return;
+    }
+    message.textContent = "Booking cancelled.";
+    await loadCustomerReservations();
 }
 
 async function submitAccountForm(event) {
@@ -91,12 +204,16 @@ async function submitAccountForm(event) {
             const { data, error } = await sb.auth.signUp({
                 email,
                 password,
-                options: { data: { full_name: name } }
+                options: {
+                    data: { full_name: name },
+                    emailRedirectTo: window.location.origin + window.location.pathname
+                }
             });
             if (error) throw error;
             if (data.session) {
                 updateCustomerAccount(data.user);
                 message.textContent = "Your account is ready. You can now reserve cars.";
+                loadCustomerReservations();
             } else {
                 message.textContent = "Check your email to confirm your account, then sign in.";
             }
@@ -105,6 +222,7 @@ async function submitAccountForm(event) {
             if (error) throw error;
             updateCustomerAccount(data.user);
             message.textContent = "You are signed in. Your reservations will be linked to your account.";
+            loadCustomerReservations();
         }
     } catch (error) {
         message.textContent = error.message || "Account request failed. Please try again.";

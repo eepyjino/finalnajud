@@ -22,6 +22,7 @@ The car rental site loads its fleet and reservations from Supabase. The customer
    alter table public.cars add column if not exists drivetrain text;
    alter table public.cars add column if not exists tire_size text;
    ```
+   To enable the customer account booking dashboard's pending-booking cancellation on an existing project, also run the `cancel_my_reservation` function definition and grants in `supabase.sql` (the section immediately after the reservations table). Do not rerun the full seed script.
 3. **Authentication > Users > Add user**: enter your email and password, tick *Auto Confirm User*. Then in the SQL Editor run:
    `update public.profiles set role = 'admin' where email = 'YOUR_EMAIL';`
 4. **Project Settings > API**: copy *Project URL* and the *anon public* key into the top of `supabase.js`:
